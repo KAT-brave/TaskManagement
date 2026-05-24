@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ログイン | TaskManagement</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-box">
+      <h1>ログイン</h1>
+      <div class="form-group">
+        <label>メールアドレス</label>
+        <input type="email" id="email" placeholder="example@email.com">
+        <div class="error-message" id="email-error">メールアドレスを入力してください</div>
+      </div>
+      <div class="form-group">
+        <label>パスワード</label>
+        <input type="password" id="password" placeholder="パスワード">
+        <div class="error-message" id="password-error">パスワードを入力してください</div>
+      </div>
+      <button class="btn btn-primary" onclick="handleLogin()">ログインする</button>
+      <button class="btn btn-guest" onclick="location.href='boards.html'">ゲストログイン</button>
+      <div class="auth-link">
+        アカウントをお持ちでない方は<a href="signup.html">新規登録</a>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

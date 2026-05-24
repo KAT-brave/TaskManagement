@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ボード一覧 | TaskManagement</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <a href="index.html" class="header-logo">Task<span>Management</span></a>
+    <button class="btn-logout" onclick="location.href='index.html'">ログアウト</button>
+  </header>
+
+  <div id="flash" class="flash success"></div>
+
+  <div class="boards-container">
+    <div class="boards-header">
+      <h2>マイボード</h2>
+      <button class="btn btn-primary" onclick="openModal()">+ 新規作成</button>
+    </div>
+    <div class="boards-grid" id="boards-grid">
+      <div class="board-card" onclick="location.href='board_detail.html'">仕事</div>
+      <div class="board-card" style="background:#a0a0a8; color:#ffffff;" onclick="location.href='board_detail.html'">プライベート</div>
+      <div class="board-card" style="background:#3a3a3e; color:#f5f5f7;" onclick="location.href='board_detail.html'">勉強</div>
+    </div>
+  </div>
+
+  <!-- 新規作成モーダル -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <h3>ボードを作成</h3>
+      <div class="form-group">
+        <label>ボード名</label>
+        <input type="text" id="board-name" placeholder="ボード名を入力">
+        <div class="error-message" id="board-name-error">ボード名を入力してください</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="addBoard()">作成する</button>
+        <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

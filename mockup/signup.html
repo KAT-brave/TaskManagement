@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新規登録 | TaskManagement</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-box">
+      <h1>新規登録</h1>
+      <div class="form-group">
+        <label>名前</label>
+        <input type="text" id="name" placeholder="お名前">
+        <div class="error-message" id="name-error">名前を入力してください</div>
+      </div>
+      <div class="form-group">
+        <label>メールアドレス</label>
+        <input type="email" id="email" placeholder="example@email.com">
+        <div class="error-message" id="email-error">メールアドレスを入力してください</div>
+      </div>
+      <div class="form-group">
+        <label>パスワード</label>
+        <input type="password" id="password" placeholder="6文字以上">
+        <div class="error-message" id="password-error">パスワードを6文字以上で入力してください</div>
+      </div>
+      <button class="btn btn-primary" onclick="handleSignup()">登録する</button>
+      <div class="auth-link">
+        すでにアカウントをお持ちの方は<a href="login.html">ログイン</a>
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

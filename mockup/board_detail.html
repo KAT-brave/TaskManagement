@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ボード詳細 | TaskManagement</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <a href="boards.html" class="header-logo">Task<span>Management</span></a>
+    <button class="btn-logout" onclick="location.href='index.html'">ログアウト</button>
+  </header>
+
+  <div id="flash" class="flash success"></div>
+
+  <div class="board-detail-header">
+    <h2>仕事</h2>
+    <button class="btn btn-secondary btn-sm" onclick="alert('編集モーダルを表示（実装予定）')">編集</button>
+    <button class="btn btn-danger btn-sm" onclick="confirmDelete()">削除</button>
+    <div class="sort-buttons">
+      <span class="sort-label">並び替え:</span>
+      <button class="btn btn-sort" id="sort-priority" onclick="sortCards('priority')">優先度順</button>
+      <button class="btn btn-sort" id="sort-due" onclick="sortCards('due_date')">期限順</button>
+      <button class="btn btn-sort" id="sort-free" onclick="sortCards('free')">フリー</button>
+    </div>
+  </div>
+
+  <div class="board-wrapper">
+    <div class="lists-container" id="lists-container">
+
+      <!-- Todoリスト -->
+      <div class="list-column">
+        <div class="list-header">
+          <h3>Todo</h3>
+          <div class="list-actions">
+            <button class="btn btn-secondary btn-sm">編集</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteList(this)">削除</button>
+          </div>
+        </div>
+        <div class="cards-list" id="list-1">
+          <div class="card-item" data-priority="2" data-due="2026-06-10" onclick="location.href='card_detail.html'">
+            <div class="card-info">
+              <span class="card-title-text">買い物をする</span>
+              <span class="card-meta">期限: 2026-06-10 ｜ 優先度: ★★</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteCard(this)">削除</button>
+            </div>
+          </div>
+          <div class="card-item" data-priority="1" data-due="2026-05-30" onclick="location.href='card_detail.html'">
+            <div class="card-info">
+              <span class="card-title-text">請求書の確認</span>
+              <span class="card-meta">期限: 2026-05-30 ｜ 優先度: ★</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteCard(this)">削除</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn-add-card" onclick="openCardModal('list-1')">+ カードを追加</button>
+      </div>
+
+      <!-- 進行中リスト -->
+      <div class="list-column">
+        <div class="list-header">
+          <h3>進行中</h3>
+          <div class="list-actions">
+            <button class="btn btn-secondary btn-sm">編集</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteList(this)">削除</button>
+          </div>
+        </div>
+        <div class="cards-list" id="list-2">
+          <div class="card-item" data-priority="3" data-due="2026-05-26" onclick="location.href='card_detail.html'">
+            <div class="card-info">
+              <span class="card-title-text">報告書を書く</span>
+              <span class="card-meta">期限: 2026-05-26 ｜ 優先度: ★★★</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteCard(this)">削除</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn-add-card" onclick="openCardModal('list-2')">+ カードを追加</button>
+      </div>
+
+      <!-- 完了リスト -->
+      <div class="list-column">
+        <div class="list-header">
+          <h3>完了</h3>
+          <div class="list-actions">
+            <button class="btn btn-secondary btn-sm">編集</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteList(this)">削除</button>
+          </div>
+        </div>
+        <div class="cards-list" id="list-3">
+          <div class="card-item" data-priority="2" data-due="2026-05-20" onclick="location.href='card_detail.html'">
+            <div class="card-info">
+              <span class="card-title-text">企画書を提出</span>
+              <span class="card-meta">期限: 2026-05-20 ｜ 優先度: ★★</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-danger btn-sm" onclick="event.stopPropagation(); deleteCard(this)">削除</button>
+            </div>
+          </div>
+        </div>
+        <button class="btn-add-card" onclick="openCardModal('list-3')">+ カードを追加</button>
+      </div>
+
+      <button class="btn-add-list" onclick="openListModal()">+ リストを追加</button>
+    </div>
+  </div>
+
+  <!-- カード追加モーダル -->
+  <div class="modal-overlay" id="card-modal">
+    <div class="modal">
+      <h3>カードを追加</h3>
+      <div class="form-group">
+        <label>タイトル</label>
+        <input type="text" id="card-title" placeholder="カードのタイトルを入力">
+        <div class="error-message" id="card-title-error">タイトルを入力してください</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="addCard()">追加する</button>
+        <button class="btn btn-secondary" onclick="closeCardModal()">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- リスト追加モーダル -->
+  <div class="modal-overlay" id="list-modal">
+    <div class="modal">
+      <h3>リストを追加</h3>
+      <div class="form-group">
+        <label>リスト名</label>
+        <input type="text" id="list-name" placeholder="リスト名を入力">
+        <div class="error-message" id="list-name-error">リスト名を入力してください</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="addList()">追加する</button>
+        <button class="btn btn-secondary" onclick="closeListModal()">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

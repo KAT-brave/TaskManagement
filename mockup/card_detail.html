@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カード詳細 | TaskManagement</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <a href="boards.html" class="header-logo">Task<span>Management</span></a>
+    <button class="btn-logout" onclick="location.href='index.html'">ログアウト</button>
+  </header>
+
+  <div id="flash" class="flash success"></div>
+
+  <div class="card-detail-container">
+    <div class="card-detail-box">
+      <h2>カード詳細</h2>
+      <div class="form-group">
+        <label>タイトル</label>
+        <input type="text" id="card-title" value="買い物をする">
+        <div class="error-message" id="title-error">タイトルを入力してください</div>
+      </div>
+      <div class="form-group">
+        <label>説明</label>
+        <textarea id="card-description" placeholder="説明を入力（任意）">スーパーへ行く</textarea>
+      </div>
+      <div class="form-group">
+        <label>期限日</label>
+        <input type="date" id="card-due-date">
+        <div class="error-message" id="date-error">過去の日付は設定できません</div>
+      </div>
+      <div class="card-detail-actions">
+        <button class="btn btn-primary" onclick="saveCard()">保存する</button>
+        <button class="btn btn-secondary" onclick="location.href='board_detail.html'">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
