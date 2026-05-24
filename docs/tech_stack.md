@@ -2,8 +2,11 @@
 
 | 役割 | 技術 |
 |---|---|
-| バックエンド | Ruby on Rails |
-| フロントエンド | HTML / CSS（Rails ビュー） |
-| ドラッグ&ドロップ | SortableJS |
-| データベース | MySQL または PostgreSQL |
-| 認証 | Devise |
+| バックエンド | Java / Spring Boot |
+| フロントエンド | React |
+| 認証 | Spring Security |
+| ドラッグ&ドロップ | react-beautiful-dnd |
+| データベース | PostgreSQL |
+| ORM | JPA / Hibernate |
+| APIクライアント | Axios |
+| ビルドツール | Maven |
