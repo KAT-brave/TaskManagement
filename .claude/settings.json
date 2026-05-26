@@ -21,14 +21,18 @@
       "Bash(lsof *)",
       "Bash(./mvnw *)",
       "Bash(JAVA_HOME=* ./mvnw *)",
-      "Bash(lsof -ti:* | xargs kill *)",
       "Bash(chmod *)",
       "Bash(brew install *)",
       "Bash(brew update *)",
       "Bash(source *)",
       "Bash(npm install *)",
       "Bash(npm run *)",
-      "Bash(npx *)"
+      "Bash(npx *)",
+      "Bash(npm create *)",
+      "Bash(echo \"Frontend PID: $!\")",
+      "Bash(npm run dev > /tmp/vite.log 2>&1 & *)",
+      "Skill(update-config)",
+      "Skill(update-config:*)"
     ],
     "deny": [
       "Bash(rm *)",
@@ -46,6 +50,23 @@
       "Bash(dd *)",
       "Bash(mkfs *)",
       "Bash(fdisk *)"
+    ],
+    "additionalDirectories": [
+      "/private/tmp"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"\nimport sys, json\ndata = json.load(sys.stdin)\ncmd = data.get('tool_input', {}).get('command', '')\nblocked = ['-Dserver.port=', '--port=', '--server.port=', 'server.port=']\nfor p in blocked:\n    if p in cmd:\n        print(json.dumps({'continue': False, 'stopReason': '[ポートルール違反] 別ポートでの起動は禁止です。必ず指定ポート（バックエンド: 8080 / フロントエンド: 5173）を使用してください。ポート競合がある場合は lsof -ti:<PORT> | xargs kill -9 で停止してから起動してください。'}, ensure_ascii=False))\n        sys.exit(0)\nprint(json.dumps({'continue': True}))\n\"",
+            "statusMessage": "ポートルールを確認中..."
+          }
+        ]
+      }
     ]
   }
 }
