@@ -1,12 +1,30 @@
 # 技術スタック
 
-| 役割 | 技術 |
-|---|---|
-| バックエンド | Java / Spring Boot |
-| フロントエンド | React |
-| 認証 | Spring Security |
-| ドラッグ&ドロップ | react-beautiful-dnd |
-| データベース | PostgreSQL |
-| ORM | JPA / Hibernate |
-| APIクライアント | Axios |
-| ビルドツール | Maven |
+## バックエンド
+
+| 役割 | 技術 | バージョン |
+|------|------|----------|
+| 言語 | Java | 21.0.11 |
+| フレームワーク | Spring Boot | 4.0.6 |
+| 認証 | Spring Security | 7.0.5 |
+| ORM | JPA / Hibernate | 7.2.12 |
+| ビルドツール | Maven | 3.x（mvnw） |
+| DBドライバ | PostgreSQL JDBC | 42.7.10 |
+
+## フロントエンド
+
+| 役割 | 技術 | バージョン |
+|------|------|----------|
+| 言語 | JavaScript (JSX) | ES2022+ |
+| フレームワーク | React | 19.2.6 |
+| ビルドツール | Vite | 8.0.14 |
+| APIクライアント | Axios | 1.16.1 |
+| ドラッグ&ドロップ | react-beautiful-dnd | 未導入（予定） |
+
+## インフラ・その他
+
+| 役割 | 技術 | バージョン |
+|------|------|----------|
+| データベース | PostgreSQL | 16 |
+| コンテナ | Docker / Docker Compose | - |
+| ランタイム | Node.js | 22.22.3 |
