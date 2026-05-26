@@ -39,6 +39,44 @@ gh pr create --title "feat: タスク一覧APIの追加 (closes #5)" --body "...
 
 ---
 
+## サーバー起動ルール（必須）
+
+### ポート競合時の対処
+
+サーバーを起動する前に、使用するポートが競合していないか確認すること。
+競合している場合は **必ず既存プロセスを停止してから、指定ポートで起動する**。
+別のポートで代替起動することは禁止。
+
+| サービス | 使用ポート | 競合確認・停止コマンド |
+|---------|-----------|----------------------|
+| バックエンド（Spring Boot） | **8080** | `lsof -ti:8080 \| xargs kill -9` |
+| フロントエンド（Vite/React） | **5173** | `lsof -ti:5173 \| xargs kill -9` |
+| データベース（PostgreSQL） | **5432** | `docker compose down && docker compose up -d` |
+
+### 起動手順
+
+```bash
+# 1. 競合プロセスを停止してからDBを起動
+docker compose up -d
+
+# 2. バックエンドを必ず8080で起動
+lsof -ti:8080 | xargs kill -9 2>/dev/null; sleep 1
+export PATH="/opt/homebrew/opt/openjdk@21/bin:$PATH"
+cd backend && ./mvnw spring-boot:run
+
+# 3. フロントエンドを必ず5173で起動
+lsof -ti:5173 | xargs kill -9 2>/dev/null; sleep 1
+cd frontend && npm run dev
+```
+
+### 禁止事項
+
+- `server.port=9090` など別ポートへの変更は禁止
+- `-Dserver.port=XXXX` など起動時の一時的なポート変更も禁止
+- フロントエンドの `vite.config.js` でポートを変更することも禁止
+
+---
+
 ## スタック情報
 
 | 役割 | 技術 |
