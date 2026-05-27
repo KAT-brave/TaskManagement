@@ -7,12 +7,12 @@ function groupByList(cards) {
   const map = {};
   for (const card of cards) {
     if (!map[card.listName]) {
-      map[card.listName] = [];
+      map[card.listName] = { listId: card.listId, cards: [] };
       order.push(card.listName);
     }
-    map[card.listName].push(card);
+    map[card.listName].cards.push(card);
   }
-  return order.map(name => ({ listName: name, cards: map[name] }));
+  return order.map(name => ({ listName: name, listId: map[name].listId, cards: map[name].cards }));
 }
 
 export default function BoardPage() {
@@ -20,14 +20,17 @@ export default function BoardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchCards()
+  function loadCards() {
+    return fetchCards()
       .then(data => {
         const sorted = [...data].sort((a, b) => a.position - b.position);
         setColumns(groupByList(sorted));
       })
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
+      .catch(err => setError(err.message));
+  }
+
+  useEffect(() => {
+    loadCards().finally(() => setLoading(false));
   }, []);
 
   if (loading) return <div className="status-message">読み込み中...</div>;
@@ -40,7 +43,9 @@ export default function BoardPage() {
           <KanbanColumn
             key={col.listName}
             listName={col.listName}
+            listId={col.listId}
             cards={col.cards}
+            onCardCreated={loadCards}
           />
         ))}
       </div>

@@ -5,3 +5,5 @@ const api = axios.create({
 });
 
 export const fetchCards = () => api.get('/api/cards').then(res => res.data);
+
+export const createCard = (data) => api.post('/api/cards', data).then(res => res.data);
