@@ -14,6 +14,7 @@ public class CardResponse {
     private final String description;
     private final LocalDate dueDate;
     private final Integer position;
+    private final String priority;
     private final Long listId;
     private final String listName;
     private final LocalDateTime createdAt;
@@ -25,6 +26,7 @@ public class CardResponse {
         this.description = card.getDescription();
         this.dueDate = card.getDueDate();
         this.position = card.getPosition();
+        this.priority = card.getPriority();
         this.listId = card.getList().getId();
         this.listName = card.getList().getName();
         this.createdAt = card.getCreatedAt();

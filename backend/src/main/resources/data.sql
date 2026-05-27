@@ -20,18 +20,18 @@ INSERT INTO lists (board_id, name, position, created_at, updated_at)
 SELECT 1, '完了', 3, NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM lists WHERE board_id = 1 AND name = '完了');
 
-INSERT INTO cards (list_id, title, description, due_date, position, created_at, updated_at)
-SELECT 1, 'ログイン機能の実装', 'Spring SecurityでJWT認証を実装する', '2026-06-01', 1, NOW(), NOW()
+INSERT INTO cards (list_id, title, description, due_date, position, priority, created_at, updated_at)
+SELECT 1, 'ログイン機能の実装', 'Spring SecurityでJWT認証を実装する', '2026-06-01', 1, 'high', NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM cards WHERE title = 'ログイン機能の実装');
 
-INSERT INTO cards (list_id, title, description, due_date, position, created_at, updated_at)
-SELECT 1, 'ユーザー登録APIの作成', 'POST /api/users エンドポイントを作成する', '2026-06-05', 2, NOW(), NOW()
+INSERT INTO cards (list_id, title, description, due_date, position, priority, created_at, updated_at)
+SELECT 1, 'ユーザー登録APIの作成', 'POST /api/users エンドポイントを作成する', '2026-06-05', 2, 'medium', NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM cards WHERE title = 'ユーザー登録APIの作成');
 
-INSERT INTO cards (list_id, title, description, due_date, position, created_at, updated_at)
-SELECT 2, 'カード読み取りAPIの実装', 'GET /api/cards エンドポイントを実装する', '2026-05-25', 1, NOW(), NOW()
+INSERT INTO cards (list_id, title, description, due_date, position, priority, created_at, updated_at)
+SELECT 2, 'カード読み取りAPIの実装', 'GET /api/cards エンドポイントを実装する', '2026-05-25', 1, 'high', NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM cards WHERE title = 'カード読み取りAPIの実装');
 
-INSERT INTO cards (list_id, title, description, due_date, position, created_at, updated_at)
-SELECT 3, 'Docker環境構築', 'PostgreSQLをDockerで動かす設定を追加した', '2026-05-20', 1, NOW(), NOW()
+INSERT INTO cards (list_id, title, description, due_date, position, priority, created_at, updated_at)
+SELECT 3, 'Docker環境構築', 'PostgreSQLをDockerで動かす設定を追加した', '2026-05-20', 1, 'low', NOW(), NOW()
 WHERE NOT EXISTS (SELECT 1 FROM cards WHERE title = 'Docker環境構築');
