@@ -1,6 +1,7 @@
 import CardItem from './CardItem';
+import CreateCardForm from './CreateCardForm';
 
-export default function KanbanColumn({ listName, cards }) {
+export default function KanbanColumn({ listName, listId, cards, onCardCreated }) {
   return (
     <div className="list-column">
       <div className="list-header">
@@ -12,6 +13,7 @@ export default function KanbanColumn({ listName, cards }) {
           <CardItem key={card.id} card={card} />
         ))}
       </div>
+      <CreateCardForm listId={listId} onCreated={onCardCreated} />
     </div>
   );
 }
