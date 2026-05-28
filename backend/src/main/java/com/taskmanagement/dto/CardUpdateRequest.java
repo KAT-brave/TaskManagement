@@ -6,10 +6,11 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-public class CardCreateRequest {
+public class CardUpdateRequest {
     private String title;
     private String description;
     private LocalDate dueDate;
     private String priority;
+    private Integer position;
     private Long listId;
 }

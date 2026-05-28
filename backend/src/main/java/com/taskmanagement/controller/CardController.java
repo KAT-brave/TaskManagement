@@ -1,6 +1,7 @@
 package com.taskmanagement.controller;
 
 import com.taskmanagement.dto.CardCreateRequest;
+import com.taskmanagement.dto.CardUpdateRequest;
 import com.taskmanagement.dto.CardResponse;
 import com.taskmanagement.service.CardService;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,10 @@ public class CardController {
     @ResponseStatus(HttpStatus.CREATED)
     public CardResponse create(@RequestBody CardCreateRequest req) {
         return cardService.create(req);
+    }
+
+    @PutMapping("/{id}")
+    public CardResponse update(@PathVariable Long id, @RequestBody CardUpdateRequest req) {
+        return cardService.update(id, req);
     }
 }

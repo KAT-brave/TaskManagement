@@ -31,6 +31,9 @@ public class Card {
     @Column(nullable = false)
     private Integer position;
 
+    @Column(length = 10)
+    private String priority;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
