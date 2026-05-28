@@ -37,4 +37,10 @@ public class CardController {
     public CardResponse update(@PathVariable Long id, @RequestBody CardUpdateRequest req) {
         return cardService.update(id, req);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        cardService.delete(id);
+    }
 }

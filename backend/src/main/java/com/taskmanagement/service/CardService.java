@@ -70,4 +70,11 @@ public class CardService {
 
         return new CardResponse(cardRepository.save(card));
     }
+
+    public void delete(Long id) {
+        if (!cardRepository.existsById(id)) {
+            throw new IllegalArgumentException("Card not found: " + id);
+        }
+        cardRepository.deleteById(id);
+    }
 }
