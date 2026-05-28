@@ -307,3 +307,55 @@ body {
   font-weight: 500;
   color: var(--text-secondary);
 }
+
+/* 削除機能 */
+.modal-divider {
+  height: 1px;
+  background: #e5e5ea;
+  margin: 4px 0;
+}
+
+.btn-delete-trigger {
+  background: none;
+  border: none;
+  color: #ff3b30;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 0;
+  text-align: left;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.btn-delete-trigger:hover {
+  opacity: 1;
+}
+
+.delete-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.delete-confirm-text {
+  font-size: 13px;
+  color: #ff3b30;
+  margin: 0;
+}
+
+.btn-danger {
+  padding: 7px 16px;
+  background: #ff3b30;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
