@@ -19,7 +19,7 @@
 | フレームワーク | React | 19.2.6 |
 | ビルドツール | Vite | 8.0.14 |
 | APIクライアント | Axios | 1.16.1 |
-| ドラッグ&ドロップ | react-beautiful-dnd | 未導入（予定） |
+| ドラッグ&ドロップ | @dnd-kit/core + @dnd-kit/sortable | 9.x |
 
 ## インフラ・その他
 

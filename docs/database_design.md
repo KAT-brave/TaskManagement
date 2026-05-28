@@ -42,6 +42,7 @@ erDiagram
         text description
         date due_date
         int position
+        string priority
         datetime created_at
         datetime updated_at
     }
@@ -94,5 +95,6 @@ erDiagram
 | description | text | カードの説明 |
 | due_date | date | 期限日 |
 | position | integer | リスト内の表示順 |
+| priority | varchar(10) | 優先度（high / medium / low） |
 | created_at | datetime | 作成日時 |
 | updated_at | datetime | 更新日時 |
