@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   DndContext,
   PointerSensor,
@@ -35,16 +35,16 @@ export default function BoardPage() {
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
-  function loadCards() {
+  const loadCards = useCallback(() => {
     return fetchCards().then(data => {
       const sorted = [...data].sort((a, b) => a.position - b.position);
       setColumns(groupByList(sorted));
     }).catch(err => setError(err.message));
-  }
+  }, []);
 
   useEffect(() => {
     loadCards().finally(() => setLoading(false));
-  }, []);
+  }, [loadCards]);
 
   function findColumn(cardDndId) {
     const cardId = Number(String(cardDndId).replace('card-', ''));

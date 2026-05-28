@@ -34,47 +34,45 @@
 
 ---
 
-## 7. URL設計
+## 7. URL設計（REST API）
 
-### 認証（Devise が自動生成）
+フロントエンドはSPAのため、バックエンドはすべて `/api/` プレフィックスのREST APIとして提供する。
 
-| やりたいこと | URL | メソッド |
+### 認証（未実装・今後対応予定）
+
+| やりたいこと | エンドポイント | メソッド |
 |---|---|---|
-| ユーザー登録画面 | /users/sign_up | GET |
-| ユーザー登録する | /users/sign_up | POST |
-| ログイン画面 | /users/sign_in | GET |
-| ログインする | /users/sign_in | POST |
-| ログアウトする | /users/sign_out | DELETE |
+| ユーザー登録 | /api/auth/register | POST |
+| ログイン | /api/auth/login | POST |
+| ログアウト | /api/auth/logout | POST |
 
-### ボード
+### ボード（未実装・今後対応予定）
 
-| やりたいこと | URL | メソッド |
+| やりたいこと | エンドポイント | メソッド |
 |---|---|---|
-| ボード一覧を見る | /boards | GET |
-| ボード作成画面 | /boards/new | GET |
-| ボードを保存する | /boards | POST |
-| ボード詳細を見る | /boards/:id | GET |
-| ボード編集画面 | /boards/:id/edit | GET |
-| ボードを更新する | /boards/:id | PATCH |
-| ボードを削除する | /boards/:id | DELETE |
+| ボード一覧取得 | /api/boards | GET |
+| ボード作成 | /api/boards | POST |
+| ボード更新 | /api/boards/{id} | PUT |
+| ボード削除 | /api/boards/{id} | DELETE |
 
-### リスト
+### リスト（未実装・今後対応予定）
 
-| やりたいこと | URL | メソッド |
+| やりたいこと | エンドポイント | メソッド |
 |---|---|---|
-| リストを作成する | /boards/:board_id/lists | POST |
-| リストを更新する | /boards/:board_id/lists/:id | PATCH |
-| リストを削除する | /boards/:board_id/lists/:id | DELETE |
+| リスト一覧取得 | /api/lists | GET |
+| リスト作成 | /api/lists | POST |
+| リスト更新 | /api/lists/{id} | PUT |
+| リスト削除 | /api/lists/{id} | DELETE |
 
-### カード
+### カード（実装済み）
 
-| やりたいこと | URL | メソッド |
-|---|---|---|
-| カードを作成する | /lists/:list_id/cards | POST |
-| カード詳細を見る | /lists/:list_id/cards/:id | GET |
-| カードを更新する | /lists/:list_id/cards/:id | PATCH |
-| カードを削除する | /lists/:list_id/cards/:id | DELETE |
-| カードを移動する | /lists/:list_id/cards/:id/move | PATCH |
+| やりたいこと | エンドポイント | メソッド | 状態 |
+|---|---|---|---|
+| カード一覧取得 | /api/cards | GET | ✅ 実装済み |
+| カード1件取得 | /api/cards/{id} | GET | ✅ 実装済み |
+| カード作成 | /api/cards | POST | ✅ 実装済み |
+| カード更新 | /api/cards/{id} | PUT | ✅ 実装済み |
+| カード削除 | /api/cards/{id} | DELETE | ✅ 実装済み |
 
 ---
 
