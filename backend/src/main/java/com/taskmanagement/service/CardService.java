@@ -9,6 +9,7 @@ import com.taskmanagement.repository.CardRepository;
 import com.taskmanagement.repository.TaskListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,18 +21,21 @@ public class CardService {
     private final CardRepository cardRepository;
     private final TaskListRepository taskListRepository;
 
+    @Transactional(readOnly = true)
     public List<CardResponse> findAll() {
         return cardRepository.findAll().stream()
                 .map(CardResponse::new)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public CardResponse findById(Long id) {
         return cardRepository.findById(id)
                 .map(CardResponse::new)
                 .orElseThrow(() -> new IllegalArgumentException("Card not found: " + id));
     }
 
+    @Transactional
     public CardResponse create(CardCreateRequest req) {
         TaskList list = taskListRepository.findById(req.getListId())
                 .orElseThrow(() -> new IllegalArgumentException("List not found: " + req.getListId()));
@@ -52,6 +56,7 @@ public class CardService {
         return new CardResponse(saved);
     }
 
+    @Transactional
     public CardResponse update(Long id, CardUpdateRequest req) {
         Card card = cardRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Card not found: " + id));
@@ -71,6 +76,7 @@ public class CardService {
         return new CardResponse(cardRepository.save(card));
     }
 
+    @Transactional
     public void delete(Long id) {
         if (!cardRepository.existsById(id)) {
             throw new IllegalArgumentException("Card not found: " + id);
