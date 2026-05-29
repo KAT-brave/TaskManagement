@@ -236,3 +236,12 @@ npm run dev
 | [DB設計](docs/database_design.md) | テーブル定義・ER図 |
 | [画面設計](docs/screen_design.md) | 画面一覧・UIデザイン仕様 |
 | [要件定義](docs/requirements.md) | アプリの目的・ターゲット・要件 |
+
+---
+
+## 課題提出ファイル（RaiseTech）
+
+| ファイル | 内容 |
+|---------|------|
+| [理解度チェック](docs/understanding-check.md) | ネットワーク・DB・Webアプリの仕組みに関する理解度チェック回答 |
+| [AIレビュー結果](docs/review.md) | Claude（AI）によるコード簡易レビュー |
