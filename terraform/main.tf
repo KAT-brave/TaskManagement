@@ -23,6 +23,9 @@ terraform {
   # }
 }
 
+# 現在の AWS アカウント情報を取得する（アカウントIDなどに使用）
+data "aws_caller_identity" "current" {}
+
 provider "aws" {
   region = var.aws_region
 

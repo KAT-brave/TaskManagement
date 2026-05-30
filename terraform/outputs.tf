@@ -5,6 +5,11 @@
 # 他のTerraformモジュールからも参照できる
 # 例: VPC IDをここで出力しておくと、Phase 2（RDS構築）で参照できる
 
+output "aws_region" {
+  description = "使用しているAWSリージョン"
+  value       = var.aws_region
+}
+
 output "vpc_id" {
   description = "作成したVPCのID"
   value       = aws_vpc.main.id
@@ -79,4 +84,24 @@ output "spring_datasource_url" {
   description = "Spring Boot の spring.datasource.url に設定する値"
   value       = "jdbc:postgresql://${aws_db_instance.main.endpoint}/${aws_db_instance.main.db_name}"
   # terraform apply 後、この値をそのまま application.properties にコピーできる
+}
+
+# =============================================================================
+# ECR 出力値（Phase 3）
+# =============================================================================
+
+output "ecr_backend_repository_url" {
+  description = "バックエンド ECR リポジトリの URL（docker push に使用）"
+  value       = aws_ecr_repository.backend.repository_url
+  # 例: 123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/taskmanagement/backend
+}
+
+output "ecr_frontend_repository_url" {
+  description = "フロントエンド ECR リポジトリの URL（docker push に使用）"
+  value       = aws_ecr_repository.frontend.repository_url
+}
+
+output "ecr_registry_url" {
+  description = "ECR レジストリの URL（docker login に使用）"
+  value       = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
 }

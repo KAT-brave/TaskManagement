@@ -8,10 +8,23 @@
 terraform/
 ├── main.tf          # VPC・サブネット・セキュリティグループ（Phase 1）
 ├── rds.tf           # RDS（PostgreSQL）・サブネットグループ（Phase 2）
+├── ecr.tf           # ECR リポジトリ（Phase 3）
 ├── variables.tf     # 変数定義
 ├── outputs.tf       # 出力値定義
 ├── terraform.tfvars # 変数の実際の値
 └── README.md        # このファイル
+
+scripts/
+└── build-and-push.sh  # Docker イメージのビルド & ECR へのプッシュ（Phase 3）
+
+backend/
+├── Dockerfile         # マルチステージビルド（JDK → JRE）（Phase 3）
+└── .dockerignore
+
+frontend/
+├── Dockerfile         # マルチステージビルド（Node → Nginx）（Phase 3）
+├── nginx.conf         # SPA ルーティング・API プロキシ設定
+└── .dockerignore
 ```
 
 ## 前提条件
@@ -131,7 +144,72 @@ ap-northeast-1（東京リージョン）
 | ecs-sg | ECS（アプリコンテナ） | 8080, 80（ALBからのみ） |
 | rds-sg | RDS（PostgreSQL） | 5432（ECSからのみ） |
 
-### Phase 2（現在）: RDS（PostgreSQL）
+### Phase 3（現在）: ECR + Docker コンテナ化
+
+```
+ECR（Elastic Container Registry）
+├── taskmanagement/backend   ← Spring Boot イメージ
+└── taskmanagement/frontend  ← React + Nginx イメージ
+
+backend/Dockerfile  →  マルチステージビルド（JDK21 → JRE21-alpine）
+frontend/Dockerfile →  マルチステージビルド（Node22 → Nginx1.27-alpine）
+```
+
+## Phase 3: ECR + Docker のデプロイ手順
+
+### 1. ECR リポジトリを作成する
+
+```bash
+cd terraform
+terraform apply   # ecr.tf が追加されたので ECR リポジトリが作成される
+```
+
+### 2. Docker イメージをビルドして ECR にプッシュする
+
+```bash
+# プロジェクトルートから実行
+./scripts/build-and-push.sh
+
+# バックエンドだけプッシュしたい場合
+./scripts/build-and-push.sh --backend-only
+
+# バージョンタグを指定する場合
+./scripts/build-and-push.sh --tag v1.0.0
+```
+
+### 3. ECR にイメージが届いたか確認する
+
+```bash
+# バックエンドのイメージ一覧
+aws ecr describe-images \
+  --repository-name taskmanagement/backend \
+  --region ap-northeast-1
+
+# フロントエンドのイメージ一覧
+aws ecr describe-images \
+  --repository-name taskmanagement/frontend \
+  --region ap-northeast-1
+```
+
+### ローカルで Docker イメージを動作確認する
+
+```bash
+# バックエンドのみビルドしてローカルで起動
+cd backend
+docker build -t taskmanagement-backend:local .
+docker run -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=default \
+  taskmanagement-backend:local
+
+# フロントエンドのみビルドしてローカルで起動
+cd frontend
+docker build -t taskmanagement-frontend:local .
+docker run -p 3000:80 taskmanagement-frontend:local
+```
+
+---
+
+### Phase 2: RDS（PostgreSQL）
 
 ```
 VPC
@@ -146,7 +224,6 @@ VPC
 
 | フェーズ | 内容 |
 |---------|------|
-| Phase 3 | ECR（コンテナレジストリ）+ Dockerイメージのpush |
 | Phase 4 | ECS Fargate（コンテナ実行環境）構築 |
 | Phase 5 | ALB（ロードバランサー）+ 外部公開 |
 
