@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/secrets.tfvars
+terraform/*.tfvars.local
+
+# Java / Maven
+backend/target/
+backend/.mvn/
+*.class
+*.jar
+
+# Node.js
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+
+# IDE
+.idea/
+*.iml
+.vscode/

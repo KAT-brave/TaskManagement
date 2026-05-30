@@ -1,0 +1,31 @@
+# Terraformが自動生成するファイル（Gitに含めない）
+.terraform/
+.terraform.lock.hcl
+
+# tfstate = AWSの現在の状態を記録するファイル
+# ローカルのtfstateはS3管理に移行後も誤ってコミットしないようにする
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+
+# 環境ごとの変数ファイル（シークレットが含まれる可能性があるため）
+# *.tfvars は共有設定なのでコミットする
+# シークレット専用のファイルは除外
+*.tfvars.local
+secrets.tfvars
+
+# macOS
+.DS_Store
+
+# JetBrains IDE
+.idea/
+
+# クラッシュログ
+crash.log
+crash.*.log
+
+# override ファイル
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
