@@ -15,3 +15,18 @@ vpc_cidr             = "10.0.0.0/16"
 availability_zones   = ["ap-northeast-1a", "ap-northeast-1c"]
 public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
 private_subnet_cidrs = ["10.0.10.0/24", "10.0.11.0/24"]
+
+# =============================================================================
+# RDS 設定
+# =============================================================================
+db_instance_class        = "db.t3.micro"    # 無料枠対象
+db_allocated_storage     = 20               # 無料枠の上限 20GB
+db_name                  = "taskmanagement"
+db_username              = "postgres"
+# db_password は機密情報のため terraform.tfvars には書かない
+# 以下の方法で渡す:
+#   export TF_VAR_db_password="your-secure-password"
+#   terraform plan
+db_backup_retention_days = 7
+db_deletion_protection   = false
+db_skip_final_snapshot   = true             # 学習中は削除しやすいように true

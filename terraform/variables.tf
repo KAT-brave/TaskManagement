@@ -56,3 +56,55 @@ variable "private_subnet_cidrs" {
   type        = list(string)
   default     = ["10.0.10.0/24", "10.0.11.0/24"]
 }
+
+# =============================================================================
+# RDS 関連変数
+# =============================================================================
+
+variable "db_instance_class" {
+  description = "RDSのインスタンスタイプ（db.t3.micro = 無料枠対象）"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "db_allocated_storage" {
+  description = "RDSの初期ストレージ容量（GB）。無料枠は20GBまで"
+  type        = number
+  default     = 20
+}
+
+variable "db_name" {
+  description = "作成するデータベース名"
+  type        = string
+  default     = "taskmanagement"
+}
+
+variable "db_username" {
+  description = "RDSの管理者ユーザー名"
+  type        = string
+  default     = "postgres"
+}
+
+variable "db_password" {
+  description = "RDSの管理者パスワード（terraform.tfvarsには書かず、環境変数で渡す）"
+  type        = string
+  sensitive   = true  # terraform plan/apply の出力にパスワードを表示しない
+}
+
+variable "db_backup_retention_days" {
+  description = "自動バックアップの保持日数（0で無効、最大35日）"
+  type        = number
+  default     = 7
+}
+
+variable "db_deletion_protection" {
+  description = "削除保護の有効化（本番はtrue推奨）"
+  type        = bool
+  default     = false
+}
+
+variable "db_skip_final_snapshot" {
+  description = "terraform destroy時にスナップショットをスキップするか（学習中はtrue）"
+  type        = bool
+  default     = true
+}

@@ -44,3 +44,39 @@ output "rds_security_group_id" {
   description = "RDS用セキュリティグループのID"
   value       = aws_security_group.rds.id
 }
+
+# =============================================================================
+# RDS 出力値（Phase 2）
+# =============================================================================
+
+output "rds_endpoint" {
+  description = "RDSのエンドポイント（Spring Bootの接続先URLに使用）"
+  value       = aws_db_instance.main.endpoint
+  # 例: taskmanagement-db.xxxxxxxxxxxx.ap-northeast-1.rds.amazonaws.com:5432
+}
+
+output "rds_hostname" {
+  description = "RDSのホスト名（ポート番号なし）"
+  value       = aws_db_instance.main.address
+}
+
+output "rds_port" {
+  description = "RDSのポート番号"
+  value       = aws_db_instance.main.port
+}
+
+output "rds_db_name" {
+  description = "RDSのデータベース名"
+  value       = aws_db_instance.main.db_name
+}
+
+output "rds_username" {
+  description = "RDSの接続ユーザー名"
+  value       = aws_db_instance.main.username
+}
+
+output "spring_datasource_url" {
+  description = "Spring Boot の spring.datasource.url に設定する値"
+  value       = "jdbc:postgresql://${aws_db_instance.main.endpoint}/${aws_db_instance.main.db_name}"
+  # terraform apply 後、この値をそのまま application.properties にコピーできる
+}

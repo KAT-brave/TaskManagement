@@ -7,6 +7,7 @@
 ```
 terraform/
 ├── main.tf          # VPC・サブネット・セキュリティグループ（Phase 1）
+├── rds.tf           # RDS（PostgreSQL）・サブネットグループ（Phase 2）
 ├── variables.tf     # 変数定義
 ├── outputs.tf       # 出力値定義
 ├── terraform.tfvars # 変数の実際の値
@@ -55,9 +56,62 @@ terraform apply
 terraform destroy
 ```
 
+## Phase 2: RDS のデプロイ手順
+
+### 1. DBパスワードを環境変数で設定する
+
+```bash
+# ⚠️ パスワードをファイルに書くと Git に残ってしまう
+# 必ず環境変数で渡すこと
+
+export TF_VAR_db_password="your-secure-password-here"
+# 推奨: 大文字・小文字・数字・記号を含む16文字以上
+```
+
+### 2. プランを確認して適用する
+
+```bash
+cd terraform
+terraform init   # 初回のみ
+
+terraform plan   # 変更内容を確認（実際には何もしない）
+# "Plan: 5 to add, 0 to change, 0 to destroy." と表示されればOK
+
+terraform apply  # 実際にAWSにRDSを作成する（10〜15分かかる）
+```
+
+### 3. 接続情報を確認する
+
+```bash
+# terraform apply 完了後、出力値を確認する
+terraform output
+
+# Spring Boot の datasource.url をそのまま取得できる
+terraform output spring_datasource_url
+```
+
+### 4. Spring Boot の設定を更新する
+
+```bash
+# ローカルから RDS に繋いで動作確認する場合
+# application-aws.properties を使うようにプロファイルを切り替える
+
+export SPRING_PROFILES_ACTIVE=aws
+export SPRING_DATASOURCE_URL=$(cd terraform && terraform output -raw spring_datasource_url)
+export SPRING_DATASOURCE_USERNAME=postgres
+export SPRING_DATASOURCE_PASSWORD="your-secure-password-here"
+
+cd backend && ./mvnw spring-boot:run
+```
+
+> ⚠️ **注意**: RDS はプライベートサブネットに配置されているため、
+> ローカル PC から直接 RDS には接続できません。
+> ローカルからの接続テストは SSH トンネル（踏み台サーバー）か
+> VPN が必要です。ECS を構築（Phase 4）した後に動作確認するのが最もシンプルです。
+
 ## AWSアーキテクチャ
 
-### Phase 1（現在）: ネットワーク層
+### Phase 1: ネットワーク層
 
 ```
 ap-northeast-1（東京リージョン）
@@ -77,11 +131,21 @@ ap-northeast-1（東京リージョン）
 | ecs-sg | ECS（アプリコンテナ） | 8080, 80（ALBからのみ） |
 | rds-sg | RDS（PostgreSQL） | 5432（ECSからのみ） |
 
-### 将来のフェーズ
+### Phase 2（現在）: RDS（PostgreSQL）
+
+```
+VPC
+└── プライベートサブネット（2AZ）
+    └── RDS PostgreSQL 16（db.t3.micro）
+        ├── マルチAZスタンバイ（本番推奨）
+        ├── 自動バックアップ（7日保持）
+        └── Enhanced Monitoring（60秒間隔）
+```
+
+### 次のフェーズ
 
 | フェーズ | 内容 |
 |---------|------|
-| Phase 2 | RDS（PostgreSQL）構築 |
 | Phase 3 | ECR（コンテナレジストリ）+ Dockerイメージのpush |
 | Phase 4 | ECS Fargate（コンテナ実行環境）構築 |
 | Phase 5 | ALB（ロードバランサー）+ 外部公開 |
