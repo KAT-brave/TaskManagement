@@ -11,19 +11,6 @@ variable "aws_region" {
   default     = "ap-northeast-1"
 }
 
-variable "domain_name" {
-  description = <<-EOT
-    独自ドメイン名（例: example.com）
-    空文字の場合は HTTP のみ（HTTPS・Route 53・ACM は作成されない）
-    ドメインを取得して Route 53 のホストゾーンを作成した後に設定する
-  EOT
-  type    = string
-  default = ""
-  # 設定方法:
-  #   terraform.tfvars に domain_name = "example.com" を追記するか
-  #   export TF_VAR_domain_name="example.com" で環境変数として渡す
-}
-
 variable "project_name" {
   description = "プロジェクト名（リソース名のプレフィックスに使用）"
   type        = string
@@ -45,33 +32,48 @@ variable "vpc_cidr" {
   description = "VPCのCIDRブロック（IPアドレス範囲）"
   type        = string
   default     = "10.0.0.0/16"
-  # 10.0.0.0/16 = 10.0.0.0〜10.0.255.255 の約65,000個のIPアドレスが使える
 }
 
 variable "availability_zones" {
   description = "使用するアベイラビリティゾーン（AZ）のリスト"
   type        = list(string)
   default     = ["ap-northeast-1a", "ap-northeast-1c"]
-  # ap-northeast-1a = 東京のデータセンターA棟
-  # ap-northeast-1c = 東京のデータセンターC棟
-  # 2つに分散することで、片方が障害になっても継続稼働できる
 }
 
 variable "public_subnet_cidrs" {
-  description = "パブリックサブネットのCIDRブロックリスト（AZの数と一致させる）"
+  description = "パブリックサブネットのCIDRブロックリスト"
   type        = list(string)
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
-  # 10.0.1.0/24 = 10.0.1.0〜10.0.1.255（256個）
 }
 
 variable "private_subnet_cidrs" {
-  description = "プライベートサブネットのCIDRブロックリスト（AZの数と一致させる）"
+  description = "プライベートサブネットのCIDRブロックリスト（Phase 2 の RDS 用）"
   type        = list(string)
   default     = ["10.0.10.0/24", "10.0.11.0/24"]
 }
 
 # =============================================================================
-# RDS 関連変数
+# EC2 関連変数
+# =============================================================================
+
+variable "ec2_instance_type" {
+  description = "EC2 インスタンスタイプ（t3.micro = 無料枠対象）"
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "ssh_public_key_path" {
+  description = <<-EOT
+    SSH 公開鍵ファイルのパス
+    事前準備: ssh-keygen -t ed25519 -C "taskmanagement" -f ~/.ssh/taskmanagement
+    → 公開鍵: ~/.ssh/taskmanagement.pub
+  EOT
+  type    = string
+  default = "~/.ssh/taskmanagement.pub"
+}
+
+# =============================================================================
+# RDS 関連変数（Phase 2 で使用）
 # =============================================================================
 
 variable "db_instance_class" {
@@ -101,7 +103,8 @@ variable "db_username" {
 variable "db_password" {
   description = "RDSの管理者パスワード（terraform.tfvarsには書かず、環境変数で渡す）"
   type        = string
-  sensitive   = true  # terraform plan/apply の出力にパスワードを表示しない
+  sensitive   = true
+  default     = ""
 }
 
 variable "db_backup_retention_days" {
@@ -120,48 +123,4 @@ variable "db_skip_final_snapshot" {
   description = "terraform destroy時にスナップショットをスキップするか（学習中はtrue）"
   type        = bool
   default     = true
-}
-
-# =============================================================================
-# ECS 関連変数（Phase 4）
-# =============================================================================
-
-variable "backend_cpu" {
-  description = "バックエンドタスクの CPU（256=0.25vCPU, 512=0.5vCPU, 1024=1vCPU）"
-  type        = number
-  default     = 512
-  # Fargate の CPU/メモリの組み合わせには制限がある
-  # 256 CPU → 512MB〜2GB
-  # 512 CPU → 1GB〜4GB
-  # 1024 CPU → 2GB〜8GB
-}
-
-variable "backend_memory" {
-  description = "バックエンドタスクのメモリ（MB）。Spring Boot は最低 512MB 推奨"
-  type        = number
-  default     = 1024
-}
-
-variable "backend_desired_count" {
-  description = "バックエンドの起動タスク数（本番は2以上で冗長化）"
-  type        = number
-  default     = 1  # 学習中はコスト削減のため1台
-}
-
-variable "frontend_cpu" {
-  description = "フロントエンドタスクの CPU（Nginx は軽量なので 256 で十分）"
-  type        = number
-  default     = 256
-}
-
-variable "frontend_memory" {
-  description = "フロントエンドタスクのメモリ（MB）"
-  type        = number
-  default     = 512
-}
-
-variable "frontend_desired_count" {
-  description = "フロントエンドの起動タスク数"
-  type        = number
-  default     = 1
 }

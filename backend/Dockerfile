@@ -12,8 +12,8 @@
 # =============================================================================
 # Stage 1: ビルドステージ
 # =============================================================================
-# Maven + JDK 21 のイメージでアプリをビルドする
-FROM eclipse-temurin:21-jdk-alpine AS builder
+# Maven + JDK 25 のイメージでアプリをビルドする
+FROM eclipse-temurin:25-jdk-alpine AS builder
 
 WORKDIR /build
 
@@ -38,7 +38,7 @@ RUN ls -lh target/*.jar
 # =============================================================================
 # JRE（実行環境のみ）の軽量イメージを使う
 # JDK（開発ツール含む）は不要なので JRE だけにする
-FROM eclipse-temurin:21-jre-alpine AS runtime
+FROM eclipse-temurin:25-jre-alpine AS runtime
 
 # セキュリティのため root 以外のユーザーで実行する
 # root で動かすと、コンテナが侵害された場合のリスクが高くなる
