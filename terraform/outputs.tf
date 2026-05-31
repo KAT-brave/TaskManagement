@@ -105,3 +105,39 @@ output "ecr_registry_url" {
   description = "ECR レジストリの URL（docker login に使用）"
   value       = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
 }
+
+# =============================================================================
+# ALB / ECS 出力値（Phase 4）
+# =============================================================================
+
+output "alb_dns_name" {
+  description = "ALB の DNS 名（ブラウザでアクセスする URL）"
+  value       = "http://${aws_lb.main.dns_name}"
+  # terraform apply 後、この URL でアプリにアクセスできる
+  # 例: http://taskmanagement-alb-xxxxxxxxx.ap-northeast-1.elb.amazonaws.com
+}
+
+output "ecs_cluster_name" {
+  description = "ECS クラスター名"
+  value       = aws_ecs_cluster.main.name
+}
+
+output "ecs_backend_service_name" {
+  description = "バックエンド ECS サービス名"
+  value       = aws_ecs_service.backend.name
+}
+
+output "ecs_frontend_service_name" {
+  description = "フロントエンド ECS サービス名"
+  value       = aws_ecs_service.frontend.name
+}
+
+output "deploy_command_backend" {
+  description = "バックエンドの新しいイメージでデプロイするコマンド"
+  value       = "aws ecs update-service --cluster ${aws_ecs_cluster.main.name} --service ${aws_ecs_service.backend.name} --force-new-deployment --region ${var.aws_region}"
+}
+
+output "deploy_command_frontend" {
+  description = "フロントエンドの新しいイメージでデプロイするコマンド"
+  value       = "aws ecs update-service --cluster ${aws_ecs_cluster.main.name} --service ${aws_ecs_service.frontend.name} --force-new-deployment --region ${var.aws_region}"
+}
