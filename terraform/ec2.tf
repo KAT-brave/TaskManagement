@@ -99,6 +99,11 @@ resource "aws_instance" "main" {
     }
     echo "Java バージョン: $(java -version 2>&1 | head -1)"
 
+    # Node.js 22 のインストール
+    dnf install -y nodejs22
+    echo "Node.js バージョン: $(node -v)"
+    echo "npm バージョン: $(npm -v)"
+
     # Nginx のインストール
     dnf install -y nginx
     systemctl enable nginx
