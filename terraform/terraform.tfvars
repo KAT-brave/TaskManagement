@@ -11,6 +11,13 @@ project_name = "taskmanagement"
 environment  = "dev"
 aws_region   = "ap-northeast-1"
 
+# =============================================================================
+# Phase 5: 独自ドメイン設定
+# =============================================================================
+# ドメインを取得したら以下のコメントを外して値を設定し terraform apply を実行する
+# domain_name = "example.com"   ← 取得したドメインに変更する
+domain_name = ""  # 空文字 = HTTP のみ（HTTPS・ACM・Route 53 は無効）
+
 vpc_cidr             = "10.0.0.0/16"
 availability_zones   = ["ap-northeast-1a", "ap-northeast-1c"]
 public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]

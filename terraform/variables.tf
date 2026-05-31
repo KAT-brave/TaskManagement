@@ -11,6 +11,19 @@ variable "aws_region" {
   default     = "ap-northeast-1"
 }
 
+variable "domain_name" {
+  description = <<-EOT
+    独自ドメイン名（例: example.com）
+    空文字の場合は HTTP のみ（HTTPS・Route 53・ACM は作成されない）
+    ドメインを取得して Route 53 のホストゾーンを作成した後に設定する
+  EOT
+  type    = string
+  default = ""
+  # 設定方法:
+  #   terraform.tfvars に domain_name = "example.com" を追記するか
+  #   export TF_VAR_domain_name="example.com" で環境変数として渡す
+}
+
 variable "project_name" {
   description = "プロジェクト名（リソース名のプレフィックスに使用）"
   type        = string
