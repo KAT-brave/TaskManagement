@@ -1,0 +1,30 @@
+# Docker ビルドコンテキストから除外するファイル
+
+# Node.js 依存関係（Stage 1 で npm ci し直すので不要）
+node_modules/
+
+# ビルド成果物（Stage 1 でビルドし直すので不要）
+dist/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+
+# README
+*.md
+
+# 環境変数ファイル（秘密情報が含まれる可能性がある）
+.env
+.env.local
+.env.*.local
+
+# テスト・ストーリーブック等
+*.test.*
+*.spec.*

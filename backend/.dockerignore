@@ -1,0 +1,25 @@
+# Docker ビルドコンテキストから除外するファイル
+# これにより、不要なファイルがイメージに含まれず、ビルドが速くなる
+
+# Maven ビルド成果物（Stage 1 でビルドし直すので不要）
+target/
+
+# Git
+.git/
+.gitignore
+
+# IDE 設定ファイル
+.idea/
+*.iml
+.vscode/
+
+# macOS
+.DS_Store
+
+# README
+*.md
+HELP.md
+
+# テストレポート
+*.xml
+!pom.xml
