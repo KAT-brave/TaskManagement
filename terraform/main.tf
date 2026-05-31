@@ -240,3 +240,66 @@ resource "aws_security_group" "rds" {
     Name = "${var.project_name}-rds-sg"
   }
 }
+
+# =============================================================================
+# NAT Gateway（Phase 4 追加）
+# =============================================================================
+# NAT Gateway = プライベートサブネット内のリソースがインターネットへ出るための出口
+#
+# なぜ必要か?
+#   ECS Fargate はプライベートサブネットで動く
+#   コンテナ起動時に ECR からイメージをダウンロードする必要がある
+#   → プライベートサブネットはインターネットに直接出られないので NAT Gateway が必要
+#
+# ※ NAT Gateway は約 $0.062/時間（≒ 約 $45/月）かかる
+#    学習コスト削減のため、VPC エンドポイントで代替することも可能（後述）
+#
+# コスト削減の代替案:
+#   aws_vpc_endpoint で ECR / CloudWatch / S3 へのプライベート通信を設定すると
+#   NAT Gateway なしで ECS を起動できる（上級者向け。Phase 5以降で検討）
+
+resource "aws_eip" "nat" {
+  count  = length(var.public_subnet_cidrs)
+  domain = "vpc"
+  # EIP（Elastic IP）= 固定パブリック IP アドレス
+  # NAT Gateway に割り当てる
+
+  tags = {
+    Name = "${var.project_name}-nat-eip-${count.index + 1}"
+  }
+}
+
+resource "aws_nat_gateway" "main" {
+  count         = length(var.public_subnet_cidrs)
+  allocation_id = aws_eip.nat[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
+  # NAT Gateway 自体はパブリックサブネットに置く（インターネットに出る出口のため）
+  # プライベートサブネットのルートテーブルから NAT Gateway に向ける
+
+  depends_on = [aws_internet_gateway.main]  # IGW が先に作られる必要がある
+
+  tags = {
+    Name = "${var.project_name}-nat-gw-${count.index + 1}"
+  }
+}
+
+# プライベートサブネット用ルートテーブル（NAT Gateway 経由でインターネットへ）
+resource "aws_route_table" "private" {
+  count  = length(var.private_subnet_cidrs)
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.main[count.index].id
+  }
+
+  tags = {
+    Name = "${var.project_name}-private-rt-${count.index + 1}"
+  }
+}
+
+resource "aws_route_table_association" "private" {
+  count          = length(aws_subnet.private)
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.private[count.index].id
+}

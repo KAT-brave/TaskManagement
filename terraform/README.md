@@ -6,9 +6,12 @@
 
 ```
 terraform/
-├── main.tf          # VPC・サブネット・セキュリティグループ（Phase 1）
+├── main.tf          # VPC・サブネット・セキュリティグループ・NAT GW（Phase 1+4）
 ├── rds.tf           # RDS（PostgreSQL）・サブネットグループ（Phase 2）
 ├── ecr.tf           # ECR リポジトリ（Phase 3）
+├── iam.tf           # ECS タスク実行ロール・タスクロール（Phase 4）
+├── alb.tf           # ALB・ターゲットグループ・リスナー（Phase 4）
+├── ecs.tf           # ECS クラスター・タスク定義・サービス（Phase 4）
 ├── variables.tf     # 変数定義
 ├── outputs.tf       # 出力値定義
 ├── terraform.tfvars # 変数の実際の値
@@ -144,7 +147,96 @@ ap-northeast-1（東京リージョン）
 | ecs-sg | ECS（アプリコンテナ） | 8080, 80（ALBからのみ） |
 | rds-sg | RDS（PostgreSQL） | 5432（ECSからのみ） |
 
-### Phase 3（現在）: ECR + Docker コンテナ化
+### Phase 4（現在）: ECS Fargate + ALB
+
+```
+インターネット
+    ↓ HTTP:80
+ALB（パブリックサブネット × 2AZ）
+    ├── /api/* → バックエンド ECS サービス（:8080）
+    └── それ以外 → フロントエンド ECS サービス（:80）
+
+ECS Fargate（プライベートサブネット）
+├── backend タスク（Spring Boot / 0.5vCPU, 1GB）
+└── frontend タスク（React+Nginx / 0.25vCPU, 512MB）
+    ↓
+RDS PostgreSQL（プライベートサブネット）
+
+プライベートサブネット → NAT Gateway → ECR・CloudWatch
+```
+
+## Phase 4: ECS Fargate のデプロイ手順
+
+### 1. イメージを ECR にプッシュしてから Terraform を実行する
+
+```bash
+# まずイメージをプッシュ（タスク定義が ECR のイメージを参照するため）
+./scripts/build-and-push.sh
+
+# Terraform で ECS・ALB・NAT GW を作成（15〜20分かかる）
+export TF_VAR_db_password="your-secure-password"
+cd terraform && terraform apply
+```
+
+### 2. デプロイ後にアクセス URL を確認する
+
+```bash
+terraform output alb_dns_name
+# → http://taskmanagement-alb-xxxxxxxxx.ap-northeast-1.elb.amazonaws.com
+```
+
+### 3. ECS タスクの状態を確認する
+
+```bash
+# タスクが Running になっているか確認
+aws ecs list-tasks \
+  --cluster taskmanagement-cluster \
+  --region ap-northeast-1
+
+# タスクの詳細（起動失敗の場合はここで原因がわかる）
+aws ecs describe-tasks \
+  --cluster taskmanagement-cluster \
+  --tasks <TASK_ARN> \
+  --region ap-northeast-1
+```
+
+### 4. ログを確認する
+
+```bash
+# バックエンドのログ（CloudWatch Logs）
+aws logs tail /ecs/taskmanagement/backend --follow --region ap-northeast-1
+
+# フロントエンドのログ
+aws logs tail /ecs/taskmanagement/frontend --follow --region ap-northeast-1
+```
+
+### 5. 新しいイメージを再デプロイする
+
+```bash
+# イメージをビルドして ECR にプッシュ
+./scripts/build-and-push.sh
+
+# ECS サービスを強制再デプロイ（新しいイメージを取得して起動）
+terraform output deploy_command_backend | bash
+terraform output deploy_command_frontend | bash
+```
+
+### 6. コンテナのシェルに入ってデバッグする（ECS Exec）
+
+```bash
+# ECS Exec を使ってコンテナ内でコマンドを実行する
+aws ecs execute-command \
+  --cluster taskmanagement-cluster \
+  --task <TASK_ARN> \
+  --container backend \
+  --interactive \
+  --command "/bin/sh" \
+  --region ap-northeast-1
+```
+
+---
+
+### Phase 3: ECR + Docker コンテナ化
 
 ```
 ECR（Elastic Container Registry）
@@ -224,8 +316,7 @@ VPC
 
 | フェーズ | 内容 |
 |---------|------|
-| Phase 4 | ECS Fargate（コンテナ実行環境）構築 |
-| Phase 5 | ALB（ロードバランサー）+ 外部公開 |
+| Phase 5 | 独自ドメイン + ACM（SSL/HTTPS）対応 |
 
 ## 注意事項
 

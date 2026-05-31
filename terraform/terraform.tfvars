@@ -30,3 +30,14 @@ db_username              = "postgres"
 db_backup_retention_days = 7
 db_deletion_protection   = false
 db_skip_final_snapshot   = true             # 学習中は削除しやすいように true
+
+# =============================================================================
+# ECS 設定（Phase 4）
+# =============================================================================
+backend_cpu            = 512    # 0.5 vCPU（Spring Boot に必要な最低限）
+backend_memory         = 1024   # 1GB
+backend_desired_count  = 1      # 学習中はコスト削減のため1台
+
+frontend_cpu           = 256    # 0.25 vCPU（Nginx は軽量）
+frontend_memory        = 512    # 512MB
+frontend_desired_count = 1
