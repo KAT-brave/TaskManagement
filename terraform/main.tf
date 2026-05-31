@@ -120,15 +120,13 @@ resource "aws_security_group" "ec2" {
   description = "EC2 security group"
   vpc_id      = aws_vpc.main.id
 
-  # SSH（22番）: サーバーへのログイン用
+  # SSH（22番）: サーバーへのログイン用（自分のPCのみ許可）
   ingress {
     description = "SSH"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    # セキュリティ強化: 本番では自分の IP アドレスだけに絞るのが望ましい
-    # cidr_blocks = ["YOUR_IP_ADDRESS/32"]
+    cidr_blocks = ["115.30.147.37/32"]
   }
 
   # HTTP（80番）: フロントエンド（Nginx）へのアクセス
@@ -149,13 +147,13 @@ resource "aws_security_group" "ec2" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # 8080番: Spring Boot への直接アクセス（動作確認用）
+  # 8080番: Spring Boot への直接アクセス（動作確認用・自分のPCのみ許可）
   ingress {
     description = "Spring Boot direct"
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["115.30.147.37/32"]
   }
 
   egress {
