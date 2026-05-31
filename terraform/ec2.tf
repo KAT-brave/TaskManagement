@@ -87,9 +87,16 @@ resource "aws_instance" "main" {
     # パッケージの更新
     dnf update -y
 
-    # Java 21（Amazon Corretto）のインストール
-    # Corretto = Amazon が提供する OpenJDK の無料ディストリビューション
-    dnf install -y java-21-amazon-corretto-headless
+    # Java 25（Amazon Corretto）のインストール
+    # Corretto 25 は Amazon Linux 2023 の標準リポジトリ未収録のため RPM を直接取得する
+    dnf install -y java-25-amazon-corretto-headless || {
+      echo "dnf 経由で失敗。RPM を直接ダウンロードしてインストールします..."
+      rpm --import https://apt.corretto.aws/corretto.key
+      curl -Lo /tmp/corretto25.rpm \
+        "https://corretto.aws/downloads/latest/amazon-corretto-25-x64-linux-jdk.rpm"
+      dnf install -y /tmp/corretto25.rpm
+      rm /tmp/corretto25.rpm
+    }
     echo "Java バージョン: $(java -version 2>&1 | head -1)"
 
     # Nginx のインストール
