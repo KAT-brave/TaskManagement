@@ -10,8 +10,10 @@ terraform/
 ├── rds.tf           # RDS（PostgreSQL）・サブネットグループ（Phase 2）
 ├── ecr.tf           # ECR リポジトリ（Phase 3）
 ├── iam.tf           # ECS タスク実行ロール・タスクロール（Phase 4）
-├── alb.tf           # ALB・ターゲットグループ・リスナー（Phase 4）
+├── alb.tf           # ALB・ターゲットグループ・リスナー（Phase 4+5）
 ├── ecs.tf           # ECS クラスター・タスク定義・サービス（Phase 4）
+├── acm.tf           # ACM 証明書（SSL/HTTPS）（Phase 5）
+├── route53.tf       # Route 53 DNS レコード（Phase 5）
 ├── variables.tf     # 変数定義
 ├── outputs.tf       # 出力値定義
 ├── terraform.tfvars # 変数の実際の値
@@ -147,7 +149,85 @@ ap-northeast-1（東京リージョン）
 | ecs-sg | ECS（アプリコンテナ） | 8080, 80（ALBからのみ） |
 | rds-sg | RDS（PostgreSQL） | 5432（ECSからのみ） |
 
-### Phase 4（現在）: ECS Fargate + ALB
+### Phase 5（現在）: 独自ドメイン + HTTPS（ACM + Route 53）
+
+```
+インターネット
+    ↓ https://example.com（HTTPS:443）
+ALB（ACM 証明書で TLS 終端）
+    ├── /api/* → バックエンド ECS
+    └── それ以外 → フロントエンド ECS
+
+http://example.com（HTTP:80）
+    → 301 リダイレクト → https://example.com
+```
+
+## Phase 5: HTTPS 対応の手順
+
+### ステップ 1: ドメインを取得する
+
+**Route 53 で取得する場合（推奨・Terraform との相性が最高）**
+
+```
+AWS コンソール
+  → Route 53
+  → 「ドメインの登録」
+  → ドメイン名を検索して購入（.com で約 $12〜15/年）
+```
+
+購入完了後、Route 53 にホストゾーンが自動作成されます。
+
+**他のレジストラ（お名前.com など）で取得済みの場合**
+
+```bash
+# 1. Route 53 でホストゾーンを作成
+aws route53 create-hosted-zone \
+  --name example.com \
+  --caller-reference $(date +%s)
+
+# 2. 表示されたネームサーバー（NS）を元のレジストラに設定する
+# → お名前.com の場合: ネームサーバーの変更 → カスタムネームサーバーに入力
+```
+
+### ステップ 2: terraform.tfvars にドメインを設定する
+
+```hcl
+# terraform/terraform.tfvars を編集
+domain_name = "example.com"   # ← 取得したドメインに変更
+```
+
+### ステップ 3: terraform apply を実行する
+
+```bash
+export TF_VAR_db_password="your-secure-password"
+cd terraform
+terraform plan   # 変更内容を確認（ACM・Route 53 レコードが追加される）
+terraform apply  # 実行（ACM の DNS 検証に 2〜5分かかる）
+```
+
+### ステップ 4: アクセスを確認する
+
+```bash
+# アプリの URL を確認
+terraform output app_url
+# → https://example.com
+
+# ブラウザで開いて🔒マークを確認
+```
+
+### ネームサーバーの確認（他レジストラの場合）
+
+```bash
+# Route 53 のネームサーバーを確認（元のレジストラに設定する必要がある値）
+terraform output route53_nameservers
+
+# DNS が正しく設定されているか確認（変更後 24〜72 時間かかる場合がある）
+dig NS example.com
+```
+
+---
+
+### Phase 4: ECS Fargate + ALB
 
 ```
 インターネット
@@ -312,11 +392,19 @@ VPC
         └── Enhanced Monitoring（60秒間隔）
 ```
 
-### 次のフェーズ
+### インフラ構築完了
 
-| フェーズ | 内容 |
+Phase 1〜5 ですべての基本インフラが整いました。
+
+**今後の発展的なトピック**
+
+| テーマ | 内容 |
 |---------|------|
-| Phase 5 | 独自ドメイン + ACM（SSL/HTTPS）対応 |
+| CI/CD | GitHub Actions で push → ECR → ECS 自動デプロイ |
+| スケーリング | ECS Auto Scaling でタスク数を自動調整 |
+| コスト最適化 | NAT Gateway → VPC Endpoint に置き換え |
+| セキュリティ強化 | WAF（Web Application Firewall）の追加 |
+| 監視 | CloudWatch アラームで異常を Slack 通知 |
 
 ## 注意事項
 

@@ -141,3 +141,22 @@ output "deploy_command_frontend" {
   description = "フロントエンドの新しいイメージでデプロイするコマンド"
   value       = "aws ecs update-service --cluster ${aws_ecs_cluster.main.name} --service ${aws_ecs_service.frontend.name} --force-new-deployment --region ${var.aws_region}"
 }
+
+# =============================================================================
+# HTTPS / ドメイン 出力値（Phase 5）
+# =============================================================================
+
+output "app_url" {
+  description = "アプリの公開 URL（ドメインがある場合は HTTPS、ない場合は HTTP の ALB URL）"
+  value       = var.domain_name != "" ? "https://${var.domain_name}" : "http://${aws_lb.main.dns_name}"
+}
+
+output "acm_certificate_arn" {
+  description = "ACM 証明書の ARN（domain_name が設定された場合のみ）"
+  value       = var.domain_name != "" ? aws_acm_certificate.main[0].arn : "domain_name が未設定のため ACM 証明書なし"
+}
+
+output "route53_nameservers" {
+  description = "Route 53 ホストゾーンのネームサーバー（他レジストラで取得したドメインはここに設定する）"
+  value       = var.domain_name != "" ? data.aws_route53_zone.main[0].name_servers : ["domain_name が未設定のため Route 53 ホストゾーンなし"]
+}
