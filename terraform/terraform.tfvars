@@ -32,6 +32,6 @@ db_username              = "postgres"
 # 以下の方法で渡す:
 #   export TF_VAR_db_password="your-secure-password"
 #   terraform plan
-db_backup_retention_days = 7
+db_backup_retention_days = 0               # 無料枠では 0（無効）にする必要あり
 db_deletion_protection   = false
 db_skip_final_snapshot   = true             # 学習中は削除しやすいように true
