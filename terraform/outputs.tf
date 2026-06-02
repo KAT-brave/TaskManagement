@@ -56,3 +56,27 @@ output "setup_log_command" {
   description = "EC2 セットアップログの確認コマンド（SSH ログイン後に実行）"
   value       = "sudo tail -f /var/log/user-data.log"
 }
+
+# =============================================================================
+# RDS 出力値（Phase 2）
+# =============================================================================
+
+output "rds_endpoint" {
+  description = "RDS のエンドポイント（ホスト名:ポート）"
+  value       = aws_db_instance.main.endpoint
+}
+
+output "rds_hostname" {
+  description = "RDS のホスト名（ポート番号なし）"
+  value       = aws_db_instance.main.address
+}
+
+output "rds_port" {
+  description = "RDS のポート番号"
+  value       = aws_db_instance.main.port
+}
+
+output "ec2_to_rds_test_command" {
+  description = "EC2 から RDS への接続テストコマンド（EC2 にログイン後に実行）"
+  value       = "psql -h ${aws_db_instance.main.address} -U ${aws_db_instance.main.username} -d ${aws_db_instance.main.db_name} -c '\\conninfo'"
+}
