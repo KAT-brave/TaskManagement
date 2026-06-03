@@ -20,6 +20,8 @@ terraform/
 └── README.md        # このファイル
 
 scripts/
+├── start-infra.sh     # インフラ起動（apply + push + デプロイ）一括スクリプト
+├── stop-infra.sh      # インフラ削除（課金停止）スクリプト
 └── build-and-push.sh  # Docker イメージのビルド & ECR へのプッシュ（Phase 3）
 
 backend/
@@ -31,6 +33,47 @@ frontend/
 ├── nginx.conf         # SPA ルーティング・API プロキシ設定
 └── .dockerignore
 ```
+
+## ⚠️ コスト管理（重要）
+
+### 現在のリソースと料金
+
+| リソース | 料金 | 無料枠 |
+|---|---|---|
+| RDS（db.t3.micro） | 750時間/月まで無料 | ✅ 12ヶ月 |
+| NAT Gateway × 2 | **約 $65〜90/月** | ❌ 対象外 |
+| ALB | 約 $17〜20/月 | ❌ 対象外 |
+| ECS Fargate | 約 $22〜27/月 | ❌ 対象外 |
+
+> **24時間稼働させると月 $100〜130 かかります**
+
+### 学習中の運用方法（必要な時だけ起動）
+
+```bash
+# 【起動】学習を始めるとき（約 20〜30 分）
+export TF_VAR_db_password="your-password"
+./scripts/start-infra.sh
+
+# 【停止】学習が終わったとき（約 10〜15 分）
+export TF_VAR_db_password="your-password"
+./scripts/stop-infra.sh
+```
+
+### 課金の確認方法
+
+```bash
+# AWS のコスト確認
+open https://ap-northeast-1.console.aws.amazon.com/billing/home#/bills
+
+# 残っているリソースを確認
+aws resourcegroupstaggingapi get-resources \
+  --tag-filters Key=Project,Values=TaskManagement \
+  --region ap-northeast-1 \
+  --query 'ResourceTagMappingList[].ResourceARN' \
+  --output text
+```
+
+---
 
 ## 前提条件
 
