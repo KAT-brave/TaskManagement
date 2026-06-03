@@ -58,16 +58,16 @@ data "aws_ami" "amazon_linux_2023" {
 
 resource "aws_instance" "main" {
   ami                    = data.aws_ami.amazon_linux_2023.id
-  instance_type          = var.ec2_instance_type  # t3.micro（無料枠）
-  subnet_id              = aws_subnet.public[0].id  # パブリックサブネットに配置
+  instance_type          = var.ec2_instance_type   # t3.micro（無料枠）
+  subnet_id              = aws_subnet.public[0].id # パブリックサブネットに配置
   vpc_security_group_ids = [aws_security_group.ec2.id]
   key_name               = aws_key_pair.main.key_name
 
   # ルートボリューム（OS が入るディスク）
   root_block_device {
     volume_type = "gp3"
-    volume_size = 20    # 20GB（無料枠: 30GB まで無料）
-    encrypted   = true  # 暗号化
+    volume_size = 20   # 20GB（無料枠: 30GB まで無料）
+    encrypted   = true # 暗号化
   }
 
   # ==========================================================================
