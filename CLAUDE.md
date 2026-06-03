@@ -77,6 +77,36 @@ cd frontend && npm run dev
 
 ---
 
+## 品質チェック
+
+### バックエンド（Java / Checkstyle）
+
+```bash
+cd backend && ./mvnw checkstyle:check
+```
+
+### フロントエンド（ESLint）
+
+```bash
+cd frontend && npm run lint
+```
+
+### Terraform
+
+```bash
+cd terraform
+
+# フォーマットチェック（コードスタイルの統一）
+terraform fmt -check -recursive
+
+# 構文チェック（設定ファイルに誤りがないか）
+terraform validate
+```
+
+PR を作成する前に必ずすべての品質チェックを実施すること。
+
+---
+
 ## スタック情報
 
 | 役割 | 技術 |
