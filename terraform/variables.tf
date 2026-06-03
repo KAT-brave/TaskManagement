@@ -123,45 +123,17 @@ variable "db_skip_final_snapshot" {
 }
 
 # =============================================================================
-# ECS 関連変数（Phase 4）
+# EC2 関連変数
 # =============================================================================
 
-variable "backend_cpu" {
-  description = "バックエンドタスクの CPU（256=0.25vCPU, 512=0.5vCPU, 1024=1vCPU）"
-  type        = number
-  default     = 512
-  # Fargate の CPU/メモリの組み合わせには制限がある
-  # 256 CPU → 512MB〜2GB
-  # 512 CPU → 1GB〜4GB
-  # 1024 CPU → 2GB〜8GB
+variable "ec2_instance_type" {
+  description = "EC2 インスタンスタイプ（t3.micro = 無料枠対象）"
+  type        = string
+  default     = "t3.micro"
 }
 
-variable "backend_memory" {
-  description = "バックエンドタスクのメモリ（MB）。Spring Boot は最低 512MB 推奨"
-  type        = number
-  default     = 1024
-}
-
-variable "backend_desired_count" {
-  description = "バックエンドの起動タスク数（本番は2以上で冗長化）"
-  type        = number
-  default     = 1 # 学習中はコスト削減のため1台
-}
-
-variable "frontend_cpu" {
-  description = "フロントエンドタスクの CPU（Nginx は軽量なので 256 で十分）"
-  type        = number
-  default     = 256
-}
-
-variable "frontend_memory" {
-  description = "フロントエンドタスクのメモリ（MB）"
-  type        = number
-  default     = 512
-}
-
-variable "frontend_desired_count" {
-  description = "フロントエンドの起動タスク数"
-  type        = number
-  default     = 1
+variable "ssh_public_key_path" {
+  description = "SSH 公開鍵ファイルのパス（~/.ssh/taskmanagement.pub）"
+  type        = string
+  default     = "~/.ssh/taskmanagement.pub"
 }
